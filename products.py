@@ -16,6 +16,12 @@ class CargueProductos(object):
             print("Se ha creado el producto {0}". format(odoo_id))
             self.crearVariantes(row, odoo_id)
 
+    def _getKeyName(self, valor):
+        valor = valor.replace('(', '')
+        valor = valor.replace(')', '')
+
+        return valor.replace(" ", "_").lower()
+
     def nuevoProducto(self, row):
         image = self._get_as_base64(row['image_url'])
         image_send = image.decode('ascii')
@@ -27,7 +33,8 @@ class CargueProductos(object):
             'categ_id': 2,
             'image': image_send,
             'x_rango_yk': str(row['range_yk']),
-            'x_fotografo': str(row['artista']).capitalize()
+            'x_fotografo': str(row['artista']).capitalize(),
+            'x_tema': self._getKeyName(str(row['tema']))
         }
         return self.odooConnector.createNew(model_name='product.template', data=data_product)
 
@@ -71,43 +78,36 @@ class CargueProductos(object):
             data={'active': True}
         )
 
-    def asignarPrecio(self):
-        pass
+    def modificarVariantes(self):
+        query = """SELECT * FROM nuevas_variantes"""
+        dataframe = pd.read_sql(query, self.conn)
+        for index, row in dataframe.iterrows():
+            self.agregarPrecio(row)
+            print("Precio agregado para ")
+            self.odooConnector.update(
+                model_name='product.product', 
+                data={
+                    'x_formato': self._getKeyName(row['category']),
+                    'x_montaje': self._getKeyName(row['framing']),
+                    'x_acabado': self._getKeyName(row['finishing']),
+                    'default_code': row['ean'],
+                    'barcode': row['ean']
+                },
+                odoo_id=int(row['odoo_id'])
+            )
+            print("Variante actualizada")
 
-    def asignarBarcodeVariantes(self):
-        data_actualizacion = self.obtenerDataActualizacionVariantes()
-        for index, row in data_actualizacion.iterrows():
-            try:
-                updated_product_product = self.odooConnector.update(
-                    model_name="product.product",
-                    odoo_id=int(row['odoo_id']),
-                    data={
-                        'barcode': row['ean'],
-                        'default_code': row['ean'],
-                        'x_studio_rango_yk': row['range_yk'],
-                        'x_studio_tema': row['theme']
-                    }
-                )
-                print("Variante {0} actualizada correctamente".format(
-                    row['odoo_id']
-                ))
-            except:
-                continue
+    def agregarPrecio(self, data):
+        id_producto = self.odooConnector.search(
+            model_name='product.template.attribute.value',
+            criteria=[[['product_tmpl_id', '=', int(data['product_tmpl_id'])], ['product_attribute_value_id', '=', int(data['value_id'])]]],
+            fields={'fields': ['id']}
+        )
+        response = self.odooConnector.update(
+            model_name='product.template.attribute.value',
+            data={'price_extra': float(data['colombia']/1.19)},
+            odoo_id=int(id_producto['id'])
+        )
+        print(response)
 
-
-    def desactivarReferenciasSinEAN(self):
-        productos = self.obtenerVariantesSinEAN()
-        for index, row in productos.iterrows():
-            try:
-                disabled = self.odooConnector.update(
-                    model_name='product.product',
-                    data={'active': False},
-                    odoo_id=int(row['odoo_id'])
-                )
-                print("Variante {0} deshabilitada".format(row['odoo_id']))
-            except:
-                print("Error al actualizar variante {0} Traza del error: {1} ".format(
-                    row['odoo_id'], traceback.print_exc()
-                ))
-                continue
 

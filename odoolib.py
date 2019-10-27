@@ -115,3 +115,12 @@ class Odoo(object):
             [[id_lista], {'item_ids': [(0, '_', data_producto)]}], {}
         )
         print(response)
+
+    def search(self, model_name="", criteria=list(), fields=dict()):
+        response = self.models.execute_kw(
+            self.dbName, self.uid, self.password,
+            model_name, 'search_read',
+            criteria,
+            fields
+        )
+        return response[0]
