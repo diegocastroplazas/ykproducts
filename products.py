@@ -12,9 +12,12 @@ class CargueProductos(object):
         query = """SELECT * FROM nuevas_fotos_odoo"""
         dataframe = pd.read_sql(query, self.conn)
         for index, row in dataframe.iterrows():
-            odoo_id = self.nuevoProducto(row)
-            print("Se ha creado el producto {0}". format(odoo_id))
-            self.crearVariantes(row, odoo_id)
+            try:
+                odoo_id = self.nuevoProducto(row)
+                print("Se ha creado el producto {0}". format(odoo_id))
+                self.crearVariantes(row, odoo_id)
+            except:
+                continue
 
     def _getKeyName(self, valor):
         valor = valor.replace('(', '')
@@ -82,20 +85,23 @@ class CargueProductos(object):
         query = """SELECT * FROM nuevas_variantes"""
         dataframe = pd.read_sql(query, self.conn)
         for index, row in dataframe.iterrows():
-            self.agregarPrecio(row)
-            print("Precio agregado para ")
-            self.odooConnector.update(
-                model_name='product.product', 
-                data={
-                    'x_formato': self._getKeyName(row['category']),
-                    'x_montaje': self._getKeyName(row['framing']),
-                    'x_acabado': self._getKeyName(row['finishing']),
-                    'default_code': row['ean'],
-                    'barcode': row['ean']
-                },
-                odoo_id=int(row['odoo_id'])
-            )
-            print("Variante actualizada")
+            try:
+                self.agregarPrecio(row)
+                print("Precio agregado para ")
+                self.odooConnector.update(
+                    model_name='product.product', 
+                    data={
+                        'x_formato': self._getKeyName(row['category']),
+                        'x_montaje': self._getKeyName(row['framing']),
+                        'x_acabado': self._getKeyName(row['finishing']),
+                        'default_code': row['ean'],
+                        'barcode': row['ean']
+                    },
+                    odoo_id=int(row['odoo_id'])
+                )
+                print("Variante actualizada")
+            except:
+                continue
 
     def agregarPrecio(self, data):
         id_producto = self.odooConnector.search(
