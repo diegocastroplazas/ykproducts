@@ -89,7 +89,17 @@ class CargueProductos(object):
         print(updated_product)
 
     def modificarVariantes(self):
-        query = """SELECT * FROM nuevas_variantes"""
+
+        '''
+        data={
+                        'x_studio_formato': self._getKeyName(row['category']),
+                        'x_studio_montaje': self._getKeyName(row['framing']),
+                        'x_studio_acabado': self._getKeyName(row['finishing']),
+                        'default_code': row['ean'],
+                        'barcode': row['ean']
+                    },
+        '''
+        query = """SELECT * FROM actualizacion_variantes"""
         dataframe = pd.read_sql(query, self.conn)
         for index, row in dataframe.iterrows():
             try:
@@ -98,9 +108,6 @@ class CargueProductos(object):
                 self.odooConnector.update(
                     model_name='product.product', 
                     data={
-                        'x_formato': self._getKeyName(row['category']),
-                        'x_montaje': self._getKeyName(row['framing']),
-                        'x_acabado': self._getKeyName(row['finishing']),
                         'default_code': row['ean'],
                         'barcode': row['ean']
                     },

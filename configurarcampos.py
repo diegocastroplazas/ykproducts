@@ -50,8 +50,8 @@ def main():
     )
     p = CargueProductos(odoo, db_conn)
     #p.crearAtributos()
-    p.crearFotos()
-    # p.modificarVariantes()
+    #p.crearFotos()
+    p.modificarVariantes()
 
 if __name__ == "__main__":
 
