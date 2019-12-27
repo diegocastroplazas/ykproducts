@@ -52,6 +52,7 @@ def main():
     #p.crearAtributos()
     #p.crearFotos()
     p.modificarVariantes()
+    # p.deshabilitarVariantes()
 
 if __name__ == "__main__":
 

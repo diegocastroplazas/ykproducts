@@ -2,6 +2,7 @@ import pandas as pd
 import traceback
 import base64
 import requests
+import uuid
 
 class CargueProductos(object):
     def __init__(self, odoo, dbconn):
@@ -130,4 +131,22 @@ class CargueProductos(object):
         )
         print(response)
 
+    def deshabilitarVariantes(self):
+
+        query = """select * from odoo_product_product opp where opp.barcode in (select distinct ean from first_order)"""
+        dataframe = pd.read_sql(query, self.conn)
+        for index, row in dataframe.iterrows():
+            nuevo_ean = str(row['default_code']) + 'nousar' + uuid.uuid4().hex.upper()[0:6]
+            try:
+                self.odooConnector.update(
+                    model_name='product.product', 
+                    data={
+                        'default_code': nuevo_ean,
+                        'barcode': nuevo_ean
+                    },
+                    odoo_id=int(row['odoo_id'])
+                )
+                print("Variante {0} actualizada".format(row['odoo_id']))
+            except:
+                continue
 
