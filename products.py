@@ -37,7 +37,7 @@ class CargueProductos(object):
             'categ_id': 2,
             'image': image_send,
             'x_studio_rango_yk_1': str(row['range_yk']),
-            'x_studio_fotografo_1': str(row['artista']).capitalize(),
+            'x_studio_artista_1': str(row['artista']).capitalize(),
             'x_studio_tema_1': str(row['tema'])
         }
         return self.odooConnector.createNew(model_name='product.template', data=data_product)
