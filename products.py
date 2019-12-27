@@ -7,9 +7,9 @@ class CargueProductos(object):
     def __init__(self, odoo, dbconn):
         self.odooConnector = odoo
         self.conn = dbconn
-        
+
     def crearFotos(self):
-        query = """SELECT * FROM nuevas_fotos_odoo"""
+        query = """SELECT * FROM cargue_product_template"""
         dataframe = pd.read_sql(query, self.conn)
         for index, row in dataframe.iterrows():
             try:
@@ -17,6 +17,7 @@ class CargueProductos(object):
                 print("Se ha creado el producto {0}". format(odoo_id))
                 self.crearVariantes(row, odoo_id)
             except:
+                traceback.print_exc() 
                 continue
 
     def _getKeyName(self, valor):
@@ -34,10 +35,10 @@ class CargueProductos(object):
             'purchase_ok': 1,
             'type': 'product',
             'categ_id': 2,
-            'image': image_send,
-            'x_rango_yk': str(row['range_yk']),
-            'x_fotografo': str(row['artista']).capitalize(),
-            'x_tema': self._getKeyName(str(row['tema']))
+            'image_1920': image_send,
+            'x_studio_rango_yk': str(row['range_yk']),
+            'x_studio_fotografo': str(row['artista']).capitalize(),
+            'x_studio_tema': self._getKeyName(str(row['tema']))
         }
         return self.odooConnector.createNew(model_name='product.template', data=data_product)
 
@@ -62,15 +63,20 @@ class CargueProductos(object):
 
     def crearVariantes(self, row=dict(), template_id=1):
         configuraciones = str(row['configuraciones']).split(',')
-        self.valores_attributo = self.obtenerValoresAtributo()
-
-        configuraciones_ids = self._obtenerIdsAtributo(keyword="Configuración", attribute_values=configuraciones)
         
+        '''
+        self.valores_attributo = self.obtenerValoresAtributo()
+        configuraciones_ids = self._obtenerIdsAtributo(keyword="Configuración", attribute_values=configuraciones)
+        '''
+        configuraciones_ids = list()
+        for id_conf in configuraciones:
+            configuraciones_ids.append(int(id_conf))
+
         product_line = self.odooConnector.createNew(
             model_name="product.template.attribute.line",
             data={
                 'product_tmpl_id': template_id,
-                'attribute_id': 4,
+                'attribute_id': 2,
                 'value_ids': [[6,0,configuraciones_ids]]
             }
         )
@@ -80,6 +86,7 @@ class CargueProductos(object):
             odoo_id=template_id,
             data={'active': True}
         )
+        print(updated_product)
 
     def modificarVariantes(self):
         query = """SELECT * FROM nuevas_variantes"""

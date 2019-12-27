@@ -2,12 +2,12 @@ config:
   env: prod
   prod:
     db:
-      host: 192.168.99.10
-      dbname: yellow_korner_db
-      user: odoo_dbadmin
-      secret: dBpPzmIPm82TPONz
+      host: 127.0.0.1
+      dbname: odoo_dev_enterprise
+      user: diego
+      secret: DarkSide894518
     odoo:
-      url: http://192.168.99.10:8069
-      dbname: odoo12
-      user: operacionestecnologicas@crusardi.net
-      secret: dBpPzmIPm82TPONz
+      url: http://127.0.0.1:8069
+      dbname: odoo_dev_enterprise
+      user: diegomecatronico@gmail.com
+      secret: DarkSide894518

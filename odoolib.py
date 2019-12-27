@@ -78,7 +78,7 @@ class Odoo(object):
             )
         except xmlrpc.client.Fault:
             print("No fue posible cargar el registro: {0}".format(data))
-            print()
+            traceback.print_exc()
             raise OdooException
         return odoo_id
 

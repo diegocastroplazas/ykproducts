@@ -40,7 +40,7 @@ def main():
         host=config['db']['host'],
         port="5432"
     )
-    obtenerAtributos('tema', db_conn)
+    # obtenerAtributos('tema', db_conn)
     
     odoo = Odoo(
        dbName=config['odoo']['dbname'],
@@ -49,6 +49,7 @@ def main():
        password=config['odoo']['secret'] 
     )
     p = CargueProductos(odoo, db_conn)
+    #p.crearAtributos()
     p.crearFotos()
     # p.modificarVariantes()
 
