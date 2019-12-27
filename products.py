@@ -35,10 +35,10 @@ class CargueProductos(object):
             'purchase_ok': 1,
             'type': 'product',
             'categ_id': 2,
-            'image_1920': image_send,
-            'x_studio_rango_yk': str(row['range_yk']),
-            'x_studio_fotografo': str(row['artista']).capitalize(),
-            'x_studio_tema': self._getKeyName(str(row['tema']))
+            'image': image_send,
+            'x_studio_rango_yk_1': str(row['range_yk']),
+            'x_studio_fotografo_1': str(row['artista']).capitalize(),
+            'x_studio_tema_1': str(row['tema'])
         }
         return self.odooConnector.createNew(model_name='product.template', data=data_product)
 

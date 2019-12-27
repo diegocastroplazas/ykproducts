@@ -2,12 +2,12 @@ config:
   env: prod
   prod:
     db:
-      host: 127.0.0.1
-      dbname: odoo_dev_enterprise
-      user: diego
-      secret: DarkSide894518
+      host: 192.168.99.56
+      dbname: yellow_korner_db
+      user: crusardi
+      secret: cuB3bi8945*
     odoo:
-      url: http://127.0.0.1:8069
-      dbname: odoo_dev_enterprise
-      user: diegomecatronico@gmail.com
-      secret: DarkSide894518
+      url: https://yellowkorner.odoo.com
+      dbname: infotodoo-prueba-yk-master-535735
+      user: admin
+      secret: H26sEdCsnZ78Mbk
