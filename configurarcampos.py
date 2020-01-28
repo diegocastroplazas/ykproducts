@@ -51,8 +51,9 @@ def main():
     p = CargueProductos(odoo, db_conn)
     #p.crearAtributos()
     #p.crearFotos()
-    p.modificarVariantes()
+    # p.modificarVariantes()
     # p.deshabilitarVariantes()
+    p.agregarConfiguracionesFaltantes()
 
 if __name__ == "__main__":
 

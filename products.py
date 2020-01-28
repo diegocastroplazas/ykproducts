@@ -77,7 +77,7 @@ class CargueProductos(object):
             model_name="product.template.attribute.line",
             data={
                 'product_tmpl_id': template_id,
-                'attribute_id': 2,
+                'attribute_id': 4,
                 'value_ids': [[6,0,configuraciones_ids]]
             }
         )
@@ -150,3 +150,46 @@ class CargueProductos(object):
             except:
                 continue
 
+
+    def agregarConfiguracionesFaltantes(self):
+        '''
+        
+            try:
+                odoo_id = row['odoo_id']
+                # self.crearVariantes(row, odoo_id)
+
+                updated_product = self.odooConnector.update(
+                    model_name="product.template",
+                    odoo_id=odoo_id,
+                    data={'active': True}
+                )
+                print("Actualizado producto {0}".format(updated_product))
+            except:
+                traceback.print_exc() 
+                continue
+        '''
+
+        query = """SELECT * FROM configuraciones_faltantes"""
+        dataframe = pd.read_sql(query, self.conn)
+
+        for index, row in dataframe.iterrows():
+            template_id = int(row['product_templ_id'])
+            odoo_id = int(row['line_id'])
+            configuraciones = str(row['configuraciones']).split(',')
+
+            conf_ids = list()
+            for conf in configuraciones:
+                conf_ids.append(int(conf))
+
+            self.odooConnector.update(
+                model_name="product.template.attribute.line",
+                odoo_id=odoo_id,
+                data = {'value_ids': [[6,0,conf_ids]]}
+            )
+
+            updated_product = self.odooConnector.update(
+                model_name="product.template",
+                odoo_id=template_id,
+                data={'active': True}
+            )
+            print(updated_product)
